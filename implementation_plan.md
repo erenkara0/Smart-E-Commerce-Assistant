@@ -27,7 +27,7 @@ Proje, kod tabanlarının birbirinden izole yönetildiği modern bir Monorepo ya
 * **API Dokümantasyon & İstemci:** Scalar (Gömülü Postman alternatifi, modern interaktif arayüz)
 * **Yapay Zeka / LLM:** OpenAI API (GPT-4o)
 * **RAG Orkestrasyonu:** LangChain
-* **LLM Gözlemlenebilirlik (Observability):** LangSmith 
+* **LLM Gözlemlenebilirlik (Observability):** LangSmith (LangChain ile yerleşik ve tam uyumlu takip paneli)
 * **Vektör Veritabanı:** ChromaDB
 * **Oturum Yönetimi:** SQLite
 
