@@ -1,7 +1,11 @@
 from fastapi import FastAPI
 
-app= FastAPI()
+from app.api.routes import root
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+app = FastAPI(
+    title="MikroAsistan API",
+    description="MikroAsistan projesi için backend API servisleri.",
+    version="0.1.0",
+)
+
+app.include_router(root.router)
