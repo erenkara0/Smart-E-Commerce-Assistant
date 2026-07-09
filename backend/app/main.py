@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from app.api.routes import root
+from app.api.routes import health
 
 app = FastAPI(
     title="MikroAsistan API",
@@ -9,3 +10,4 @@ app = FastAPI(
 )
 
 app.include_router(root.router)
+app.include_router(health.router)
