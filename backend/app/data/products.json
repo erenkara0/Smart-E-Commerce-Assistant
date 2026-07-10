@@ -1,0 +1,182 @@
+[
+    {
+      "id": "prd-001",
+      "name": "Lenovo IdeaPad Gaming 3",
+      "category": "Laptop",
+      "brand": "Lenovo",
+      "price": 32999.99,
+      "currency": "TRY",
+      "description": "Oyun, yazılım geliştirme ve günlük kullanım için dengeli performans sunan laptop.",
+      "features": [
+        "AMD Ryzen 5 işlemci",
+        "16 GB RAM",
+        "512 GB SSD",
+        "NVIDIA RTX 4050 ekran kartı",
+        "15.6 inç Full HD ekran"
+      ],
+      "stock": 12,
+      "rating": 4.5
+    },
+    {
+      "id": "prd-002",
+      "name": "ASUS TUF Gaming A15",
+      "category": "Laptop",
+      "brand": "ASUS",
+      "price": 42999.99,
+      "currency": "TRY",
+      "description": "Yüksek performanslı oyun ve mühendislik uygulamaları için güçlü donanıma sahip laptop.",
+      "features": [
+        "AMD Ryzen 7 işlemci",
+        "32 GB RAM",
+        "1 TB SSD",
+        "NVIDIA RTX 4060 ekran kartı",
+        "144 Hz ekran"
+      ],
+      "stock": 8,
+      "rating": 4.7
+    },
+    {
+      "id": "prd-003",
+      "name": "Apple MacBook Air M2",
+      "category": "Laptop",
+      "brand": "Apple",
+      "price": 45999.99,
+      "currency": "TRY",
+      "description": "Taşınabilirlik, uzun pil ömrü ve sessiz çalışma isteyen kullanıcılar için ince ve hafif laptop.",
+      "features": [
+        "Apple M2 çip",
+        "8 GB RAM",
+        "256 GB SSD",
+        "13.6 inç Liquid Retina ekran",
+        "Uzun pil ömrü"
+      ],
+      "stock": 10,
+      "rating": 4.8
+    },
+    {
+      "id": "prd-004",
+      "name": "Samsung Galaxy S24",
+      "category": "Telefon",
+      "brand": "Samsung",
+      "price": 36999.99,
+      "currency": "TRY",
+      "description": "Güçlü kamera, yüksek ekran kalitesi ve yapay zeka özellikleriyle öne çıkan akıllı telefon.",
+      "features": [
+        "128 GB depolama",
+        "Dynamic AMOLED ekran",
+        "50 MP kamera",
+        "5G desteği",
+        "Hızlı şarj"
+      ],
+      "stock": 20,
+      "rating": 4.6
+    },
+    {
+      "id": "prd-005",
+      "name": "iPhone 15",
+      "category": "Telefon",
+      "brand": "Apple",
+      "price": 49999.99,
+      "currency": "TRY",
+      "description": "Günlük kullanım, kamera performansı ve uzun yazılım desteği isteyen kullanıcılar için akıllı telefon.",
+      "features": [
+        "128 GB depolama",
+        "A16 Bionic çip",
+        "Super Retina XDR ekran",
+        "48 MP ana kamera",
+        "USB-C bağlantı"
+      ],
+      "stock": 14,
+      "rating": 4.7
+    },
+    {
+      "id": "prd-006",
+      "name": "Sony WH-1000XM5",
+      "category": "Kulaklık",
+      "brand": "Sony",
+      "price": 14999.99,
+      "currency": "TRY",
+      "description": "Gürültü engelleme, konfor ve yüksek ses kalitesi isteyen kullanıcılar için kablosuz kulaklık.",
+      "features": [
+        "Aktif gürültü engelleme",
+        "Kablosuz bağlantı",
+        "Uzun pil ömrü",
+        "Hızlı şarj",
+        "Yüksek kaliteli mikrofon"
+      ],
+      "stock": 18,
+      "rating": 4.8
+    },
+    {
+      "id": "prd-007",
+      "name": "Logitech MX Master 3S",
+      "category": "Mouse",
+      "brand": "Logitech",
+      "price": 3999.99,
+      "currency": "TRY",
+      "description": "Yazılım geliştirme, tasarım ve ofis kullanımı için ergonomik kablosuz mouse.",
+      "features": [
+        "Ergonomik tasarım",
+        "Kablosuz bağlantı",
+        "Sessiz tıklama",
+        "Yüksek hassasiyet",
+        "Çoklu cihaz desteği"
+      ],
+      "stock": 25,
+      "rating": 4.6
+    },
+    {
+      "id": "prd-008",
+      "name": "Logitech MX Keys S",
+      "category": "Klavye",
+      "brand": "Logitech",
+      "price": 4499.99,
+      "currency": "TRY",
+      "description": "Kodlama, yazı yazma ve ofis kullanımı için sessiz ve konforlu kablosuz klavye.",
+      "features": [
+        "Kablosuz bağlantı",
+        "Sessiz tuşlar",
+        "Aydınlatmalı tuşlar",
+        "Çoklu cihaz desteği",
+        "Şarj edilebilir batarya"
+      ],
+      "stock": 16,
+      "rating": 4.5
+    },
+    {
+      "id": "prd-009",
+      "name": "Samsung Odyssey G5",
+      "category": "Monitör",
+      "brand": "Samsung",
+      "price": 11999.99,
+      "currency": "TRY",
+      "description": "Oyun, yazılım geliştirme ve çoklu pencere kullanımı için yüksek yenileme hızına sahip monitör.",
+      "features": [
+        "27 inç ekran",
+        "QHD çözünürlük",
+        "144 Hz yenileme hızı",
+        "1 ms tepki süresi",
+        "Kavisli ekran"
+      ],
+      "stock": 9,
+      "rating": 4.4
+    },
+    {
+      "id": "prd-010",
+      "name": "Apple iPad Air",
+      "category": "Tablet",
+      "brand": "Apple",
+      "price": 28999.99,
+      "currency": "TRY",
+      "description": "Not alma, çizim, içerik tüketimi ve taşınabilir çalışma için güçlü tablet.",
+      "features": [
+        "10.9 inç Liquid Retina ekran",
+        "Apple M1 çip",
+        "64 GB depolama",
+        "Apple Pencil desteği",
+        "Hafif tasarım"
+      ],
+      "stock": 11,
+      "rating": 4.7
+    }
+  ]

@@ -3,7 +3,7 @@ from fastapi.exceptions import RequestValidationError
 from scalar_fastapi import get_scalar_api_reference
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from app.api.routes import chat, health, root
+from app.api.routes import chat, health, products, root
 from app.core.exception_handlers import (
     http_exception_handler,
     internal_server_error_handler,
@@ -32,3 +32,4 @@ app.add_exception_handler(Exception, internal_server_error_handler)
 app.include_router(root.router)
 app.include_router(health.router)
 app.include_router(chat.router)
+app.include_router(products.router)
