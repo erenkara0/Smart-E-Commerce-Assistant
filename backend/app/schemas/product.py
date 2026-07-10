@@ -65,3 +65,14 @@ class Product(BaseModel):
         description="Average product rating between 0 and 5.",
         examples=[4.6],
     )
+
+
+class ProductListResponseData(BaseModel):
+    products: list[Product]
+    total: int
+
+
+class ProductListResponse(BaseModel):
+    success: bool
+    message: str
+    data: ProductListResponseData
