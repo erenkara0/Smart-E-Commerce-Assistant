@@ -76,3 +76,19 @@ class ProductListResponse(BaseModel):
     success: bool
     message: str
     data: ProductListResponseData
+
+class ProductSearchResult(BaseModel):
+    document: str
+    score: int
+
+
+class ProductSearchResponseData(BaseModel):
+    query: str
+    results: list[ProductSearchResult]
+    total: int
+
+
+class ProductSearchResponse(BaseModel):
+    success: bool
+    message: str
+    data: ProductSearchResponseData
