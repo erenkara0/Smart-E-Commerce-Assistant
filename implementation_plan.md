@@ -1,102 +1,289 @@
-# 🚀 Uygulama Planı (Implementation Plan): Mikro İhracat ve E-Ticaret İçin RAG Tabanlı Akıllı Asistan
+# 🚀 Implementation Plan: Mikro İhracat ve E-Ticaret İçin RAG Tabanlı Akıllı Asistan
 
 ## 📑 İçindekiler
-1. Proje Özeti ve Hedefleri
-2. Sistem Mimarisi ve Kullanılacak Teknolojiler
-3. Klasör Yapısı ve Çalışma Ortamı
-4. Aşama 1: Temel Kurulum, Güvenlik ve Çevre Değişkenleri
-5. Aşama 2: Dikey Dilimleme, API Dokümantasyonu (Scalar) ve Güvenli Bağlantı Testi
-6. Aşama 3: Veri Hazırlığı, Bölme ve Vektör Soyutlama Katmanı
-7. Aşama 4: Üretim Seviyesi RAG Mimarisinin, Oturum Hafızasının ve Gözlemlenebilirliğin (LangSmith) Geliştirilmesi
-8. Aşama 5: Frontend Arayüz ve Oturum Entegrasyonu
-9. Aşama 6: İleri Seviye İyileştirmeler, Güvenlik ve Konteynerleştirme (Docker)
-10. Geliştirme Metodolojisi, İş Takibi ve Kalite Standartları
+
+1. Proje Özeti ve Hedefleri  
+2. Sistem Mimarisi ve Kullanılacak Teknolojiler  
+3. Klasör Yapısı ve Çalışma Ortamı  
+4. M0: Proje Kimliği ve Teknik Planlama  
+5. M1: Temel Kurulum ve Güvenlik  
+6. M2: FastAPI, Scalar API ve İlk Dikey Dilim  
+7. M3: Veri Hazırlığı ve Vektör Arama Altyapısı  
+8. M4: RAG Mimarisi, Oturum Hafızası ve LangSmith  
+9. M5: Frontend Chat Arayüzü  
+10. M6: Güvenlik, Docker ve İyileştirmeler  
+11. M7: Test, Dokümantasyon ve Final Hazırlığı  
+12. Geliştirme Metodolojisi ve Kalite Standartları  
 
 ---
 
-### 1. Proje Özeti ve Hedefleri
-Bu projenin temel amacı, e-ticaret platformlarındaki müşteri etkileşimlerini otomatize eden, halüsinasyon görmeyen ve sadece mağazaya ait spesifik verilerle doğru cevaplar üretebilen akıllı bir asistan geliştirmektir. 
-Modeli sıfırdan eğitmek yerine, sektör standardı olan RAG (Retrieval-Augmented Generation) mimarisi kullanılacaktır. OpenAI modelleri, tasarlanan veri katmanları ve kalıcı oturum hafızalarıyla desteklenerek kurumsal seviyede akıllandırılacaktır.
+## 1. Proje Özeti ve Hedefleri
 
-### 2. Sistem Mimarisi ve Kullanılacak Teknolojiler
-Proje, kod tabanlarının birbirinden izole yönetildiği modern bir Monorepo yapısı üzerine inşa edilmiştir.
+Bu projenin temel amacı, mikro ihracat ve e-ticaret süreçlerinde kullanılabilecek, mağaza verilerine dayalı cevaplar üreten RAG tabanlı bir akıllı asistan geliştirmektir.
 
-**Backend**
-* **Dil:** Python 3.11+
-* **Web Framework:** FastAPI
-* **API Dokümantasyon & İstemci:** Scalar (Gömülü Postman alternatifi, modern interaktif arayüz)
-* **Yapay Zeka / LLM:** OpenAI API (GPT-4o)
-* **RAG Orkestrasyonu:** LangChain
-* **LLM Gözlemlenebilirlik (Observability):** LangSmith (LangChain ile yerleşik ve tam uyumlu takip paneli)
-* **Vektör Veritabanı:** ChromaDB
-* **Oturum Yönetimi:** SQLite
+Sistem, yalnızca dil modelinin genel bilgisine dayanmak yerine mağazaya ait ürün, stok, kargo, iade ve mikro ihracat verilerini kullanarak daha güvenilir ve bağlama uygun cevaplar üretmeyi hedefler.
 
-**Frontend**
-* **Framework:** Next.js (App Router, TypeScript)
-* **Stil:** Tailwind CSS
+Bu yaklaşım ile sistemin veri dışına çıkması, yanlış bilgi üretmesi ve kullanıcıya bağlamdan kopuk cevaplar vermesi azaltılmaya çalışılır.
 
-**DevOps & Dağıtım**
-* **Konteynerleştirme:** Docker & Docker Compose (Tüm geliştirme ve canlı ortamı izole etmek için)
+---
 
-### 3. Klasör Yapısı ve Çalışma Ortamı
-Proje, güvenlik duvarlarının ve çevre değişkenlerinin hassas bir şekilde ayrıştırıldığı kararlı bir monorepo hiyerarşisine sahiptir.
+## 2. Sistem Mimarisi ve Kullanılacak Teknolojiler
 
-PROJE_ANA_DİZİNİ/
-│
+Proje, backend ve frontend taraflarının aynı repository içinde yönetildiği modern bir monorepo yapısı üzerine kuruludur.
+
+### Backend
+
+- Python
+- FastAPI
+- Pydantic
+- Uvicorn
+- Scalar API Reference
+
+### Frontend
+
+- Next.js
+- TypeScript
+- Tailwind CSS
+
+### Planlanan RAG ve Gözlemlenebilirlik Araçları
+
+- LangChain
+- OpenAI API
+- ChromaDB
+- SQLite
+- LangSmith
+
+### DevOps ve Ortam Yönetimi
+
+- Git / GitHub
+- GitHub Projects Kanban
+- GitHub Issues
+- Pull Request akışı
+- Environment variables
+- Docker
+- Docker Compose
+
+---
+
+## 3. Klasör Yapısı ve Çalışma Ortamı
+
+Proje monorepo yapısında geliştirilir.
+
+```text
+Smart-E-Commerce-Assistant/
 ├── backend/
-│   ├── venv/                # İzole Python sanal ortamı (Yerel geliştirme için)
-│   ├── Dockerfile           # Backend uygulamasını konteynerleştiren imaj dosyası
-│   ├── main.py              # FastAPI giriş noktası ve Scalar API arayüzü
-│   ├── .env                 # API ve LangSmith takip anahtarları
-│   └── requirements.txt     
+│   ├── app/
+│   │   ├── api/
+│   │   │   └── routes/
+│   │   │       ├── chat.py
+│   │   │       ├── health.py
+│   │   │       ├── products.py
+│   │   │       └── root.py
+│   │   ├── core/
+│   │   │   ├── config.py
+│   │   │   └── exception_handlers.py
+│   │   ├── data/
+│   │   │   └── products.json
+│   │   ├── schemas/
+│   │   │   ├── chat.py
+│   │   │   ├── product.py
+│   │   │   └── response.py
+│   │   ├── services/
+│   │   │   ├── product_document_builder.py
+│   │   │   ├── product_loader.py
+│   │   │   └── vector_store_service.py
+│   │   ├── __init__.py
+│   │   └── main.py
+│   └── requirements.txt
 │
 ├── frontend/
-│   ├── Dockerfile           # Frontend uygulamasını konteynerleştiren imaj dosyası
-│   ├── src/app/             
-│   └── package.json         
+│   ├── public/
+│   ├── src/
+│   │   └── app/
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── next.config.ts
+│   ├── postcss.config.mjs
+│   ├── eslint.config.mjs
+│   └── tsconfig.json
 │
-├── docker-compose.yml       # Tek komutla tüm sistemi (Front+Back) ayağa kaldıran orkestrasyon dosyası
-└── implementation_plan.md
+├── docs/
+│   ├── brand/
+│   └── design/
+│
+├── .env.example
+├── .gitignore
+├── implementation_plan.md
+└── README.md
+```
 
-4. Aşama 1: Temel Kurulum, Güvenlik ve Çevre Değişkenleri
-Sanal Ortam Kurulumu: Backend klasöründe venv kurularak yerel geliştirme için izolasyon sağlanır.
+---
 
-Güvenlik: .gitignore dosyası ile hassas verilerin GitHub'a sızması engellenir.
+## 4. M0: Proje Kimliği ve Teknik Planlama
 
-Frontend Kurulumu: Next.js ve Tailwind CSS ayağa kaldırılır.
+Bu aşamada projenin genel amacı, teknik kapsamı ve tasarım yaklaşımı belirlenir.
 
-5. Aşama 2: Dikey Dilimleme, API Dokümantasyonu (Scalar) ve Güvenli Bağlantı Testi
-Yapay zeka entegre edilmeden önce temel veri hattı kurulur.
+Bu kapsamda:
 
-Scalar Entegrasyonu: FastAPI'nin eski nesil varsayılan Swagger arayüzü devre dışı bırakılır. Yerine karanlık mod destekli, gömülü bir API Client içeren (Postman ihtiyacını ortadan kaldıran) Scalar arayüzü entegre edilir.
+- Proje amacı tanımlanır.
+- Kullanılacak teknolojiler belirlenir.
+- Monorepo yaklaşımı seçilir.
+- Tasarım sistemi için temel renk, font ve arayüz kararları hazırlanır.
+- Proje fazları milestone yapısına bölünür.
+- GitHub Projects üzerinde iş takibi planlanır.
 
-Bağlantı Testi: Next.js (Frontend) üzerinden FastAPI'ye atılan güvenli CORS izinli fetch istekleri doğrudan Scalar üzerinden veya tarayıcıdan test edilir.
+---
 
-6. Aşama 3: Veri Hazırlığı, Bölme ve Vektör Soyutlama Katmanı
-Veri Toplama: Mağaza verileri (CSV) yapılandırılır.
+## 5. M1: Temel Kurulum ve Güvenlik
 
-Text Splitting: Veriler LangChain ile küçük parçalara (chunk) bölünür.
+Bu aşamada backend ve frontend için temel geliştirme ortamı hazırlanır.
 
-Vektörleştirme: Parçalar OpenAI Embedding ile ChromaDB üzerinde vektör formatında saklanır.
+Yapılacak işler:
 
-7. Aşama 4: Üretim Seviyesi RAG Mimarisinin, Oturum Hafızasının ve Gözlemlenebilirliğin (LangSmith) Geliştirilmesi
-Anlamsal Arama (Semantic Search): Soru veritabanında aranır ve en benzer parçalar çekilir.
+- Backend için FastAPI proje iskeleti oluşturulur.
+- Frontend için Next.js projesi hazırlanır.
+- Kök dizinde ortak `.gitignore` dosyası oluşturulur.
+- `.env.example` dosyası hazırlanır.
+- Gerçek `.env` dosyasının Git takibine alınması engellenir.
+- Backend ve frontend bağımlılıkları ayrı ayrı yönetilir.
+- Proje klasör yapısı düzenlenir.
 
-Kayan Pencere (Sliding Window Memory): SQLite ile bağlam geçmişi son 5 mesajla sınırlandırılır.
+Bu aşamanın amacı, güvenli ve sürdürülebilir bir geliştirme ortamı oluşturmaktır.
 
-Prompt Mühendisliği: Mağaza verisi dışına çıkmama talimatları verilir.
+---
 
-LLM Gözlemlenebilirliği (LangSmith): LangChain zincirine yerleşik LangSmith entegrasyonu dahil edilir. Sistem çalıştırıldığı anda harcanan token sayısı (maliyet), geri çağrılan döküman kalite skoru ve yanıt süresi (latency) LangSmith web arayüzünden canlı olarak izlenir.
+## 6. M2: FastAPI, Scalar API ve İlk Dikey Dilim
 
-8. Aşama 5: Frontend Arayüz ve Oturum Entegrasyonu
-Modern sohbet (Chat) arayüzü tasarlanır ve session_id bazlı durum yönetimleri (state management) ile veriler ekrana asenkron olarak basılır.
+Bu aşamada backend tarafında temel API yapısı oluşturulur.
 
-9. Aşama 6: İleri Seviye İyileştirmeler, Güvenlik ve Konteynerleştirme (Docker)
-Girdi Güvenliği (Guardrails): Prompt Injection saldırılarını önleme.
+Yapılan ve planlanan işler:
 
-Veritabanı Temizliği: Eski oturumların periyodik olarak temizlenmesi.
+- FastAPI uygulaması yapılandırılır.
+- Scalar API Reference entegre edilir.
+- `GET /` root endpoint’i oluşturulur.
+- `GET /health` sağlık kontrol endpoint’i eklenir.
+- Genel API response formatı belirlenir.
+- Chat request ve response şemaları oluşturulur.
+- `POST /chat` endpoint’i ile ilk dikey API akışı hazırlanır.
+- Hata cevapları için exception handler yapısı eklenir.
 
-Konteynerleştirme (Docker-Compose): Geliştirme ortamındaki tüm bağımlılıkları sabitlemek için sistem izole Docker imajları ve docker-compose ile paketlenir.
+Bu aşamanın amacı, yapay zeka entegrasyonundan önce temel API akışının çalıştığını doğrulamaktır.
 
-10. Geliştirme Metodolojisi, İş Takibi ve Kalite Standartları
-Tüm süreç GitHub Projects üzerinden (Kanban) ve PR (Pull Request) incelemeleriyle yürütülür.
+---
+
+## 7. M3: Veri Hazırlığı ve Vektör Arama Altyapısı
+
+Bu aşamada RAG sisteminde kullanılacak ürün verisinin hazırlanması ve arama altyapısının temelinin oluşturulması hedeflenir.
+
+### Tamamlanan Geliştirmeler
+
+- Ürün veri modeli `Product` şeması ile tanımlandı.
+- Örnek ürün veri seti `products.json` dosyasında hazırlandı.
+- Ürün verilerini okuyup doğrulayan `product_loader.py` servis yapısı eklendi.
+- Ürün listesini API üzerinden döndüren `GET /products` endpoint’i oluşturuldu.
+- Ürün kayıtlarını RAG süreçlerinde kullanılabilecek metin dokümanlarına dönüştüren `product_document_builder.py` dosyası eklendi.
+- Bellek içi temel vector store servis altyapısı `vector_store_service.py` ile oluşturuldu.
+- Temel ürün dokümanı araması için `GET /products/search` endpoint’i eklendi.
+
+### Mevcut Arama Yaklaşımı
+
+Mevcut arama yapısı henüz gerçek embedding veya ChromaDB kullanmamaktadır. Şu an ürün dokümanları bellek içinde tutulur ve basit metin eşleştirme yöntemiyle aranır.
+
+Bu yapı ilerleyen aşamalarda şu geliştirmelere temel oluşturacaktır:
+
+- Ürün metinlerinin embedding formatına dönüştürülmesi
+- ChromaDB üzerinde vektör olarak saklanması
+- Kullanıcı sorgularına göre semantic search yapılması
+- Bulunan bağlamın RAG cevap üretiminde kullanılması
+
+---
+
+## 8. M4: RAG Mimarisi, Oturum Hafızası ve LangSmith
+
+Bu aşamada temel ürün arama altyapısı gerçek RAG mimarisine dönüştürülecektir.
+
+Planlanan işler:
+
+- OpenAI API entegrasyonu yapılır.
+- LangChain ile RAG zinciri oluşturulur.
+- Kullanıcı sorusu embedding veya retrieval sistemiyle ilgili ürün dokümanları üzerinde aranır.
+- Bulunan bağlam LLM’e kontrollü şekilde verilir.
+- Modelin yalnızca verilen mağaza verisine göre cevap üretmesi sağlanır.
+- SQLite ile oturum hafızası eklenir.
+- Son mesajları dikkate alan sınırlı konuşma geçmişi yapısı oluşturulur.
+- LangSmith ile çağrı takibi, token kullanımı, gecikme süresi ve hata izleme yapılır.
+
+---
+
+## 9. M5: Frontend Chat Arayüzü
+
+Bu aşamada kullanıcıların asistanla etkileşime geçeceği frontend arayüzü geliştirilecektir.
+
+Planlanan işler:
+
+- Chat sayfası tasarlanır.
+- Kullanıcı mesaj girişi eklenir.
+- Backend `POST /chat` endpoint’i ile bağlantı kurulur.
+- Loading, hata ve başarılı cevap durumları yönetilir.
+- Mesaj geçmişi arayüzde gösterilir.
+- Session tabanlı konuşma akışı desteklenir.
+- Mobil uyumlu temel tasarım düzenlemeleri yapılır.
+
+---
+
+## 10. M6: Güvenlik, Docker ve İyileştirmeler
+
+Bu aşamada sistem daha güvenli, taşınabilir ve çalıştırılabilir hale getirilecektir.
+
+Planlanan işler:
+
+- Prompt injection risklerine karşı temel guardrail kuralları eklenir.
+- Modelin mağaza verisi dışına çıkmasını azaltacak sistem talimatları hazırlanır.
+- CORS ayarları yapılandırılır.
+- Eski veya gereksiz oturum verilerinin temizlenmesi için yapı oluşturulur.
+- Backend için Dockerfile hazırlanır.
+- Frontend için Dockerfile hazırlanır.
+- Docker Compose ile backend ve frontend birlikte çalıştırılır.
+- Ortam değişkenleri Docker ortamına uygun hale getirilir.
+
+---
+
+## 11. M7: Test, Dokümantasyon ve Final Hazırlığı
+
+Bu aşamada proje genel olarak test edilir ve sunuma hazır hale getirilir.
+
+Planlanan işler:
+
+- Backend endpointleri manuel ve otomatik testlerle kontrol edilir.
+- Ürün listeleme ve ürün arama akışları doğrulanır.
+- Chat akışı test edilir.
+- README güncellenir.
+- API kullanım notları eklenir.
+- Kurulum ve çalıştırma adımları netleştirilir.
+- Final sunum içeriği hazırlanır.
+- Projenin güçlü yönleri ve geliştirmeye açık tarafları belgelenir.
+
+---
+
+## 12. Geliştirme Metodolojisi ve Kalite Standartları
+
+Proje geliştirme süreci GitHub Projects Kanban panosu üzerinden takip edilir.
+
+Her geliştirme adımı için:
+
+- Issue oluşturulur.
+- İlgili milestone seçilir.
+- Ayrı branch üzerinden geliştirme yapılır.
+- Değişiklikler anlamlı commit mesajlarıyla kaydedilir.
+- Pull Request açılır.
+- PR açıklamasında yapılan işler ve test notları belirtilir.
+- İlgili issue’lar PR açıklamasında referanslanır.
+
+Kod kalitesi için temel prensipler:
+
+- Her dosya tek bir sorumluluğa sahip olmalıdır.
+- Endpoint dosyaları yalnızca istek alıp cevap döndürmelidir.
+- İş mantığı servis katmanında tutulmalıdır.
+- Veri modelleri Pydantic şemalarıyla doğrulanmalıdır.
+- Gizli bilgiler repository içine eklenmemelidir.
+- Geliştirme süreci küçük ama anlamlı PR’lar halinde ilerlemelidir.
