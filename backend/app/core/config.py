@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     openai_api_key: str | None = None
     openai_model: str = "gpt-4o-mini"
 
-    retrieval_top_k: int = 4
+    retrieval_top_k: int = 2
     rag_max_context_chars: int = 4000
     vector_store_provider: str = "in_memory"
 
