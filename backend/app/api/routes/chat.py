@@ -1,6 +1,8 @@
 from fastapi import APIRouter
 
 from app.schemas.chat import ChatRequest, ChatResponse, ChatResponseData
+from app.services.openai_client import generate_chat_completion
+from app.services.rag_prompt_builder import build_rag_prompt
 from app.services.retrieval_context_builder import build_retrieval_context
 
 
@@ -10,20 +12,29 @@ router = APIRouter(prefix="/chat", tags=["Chat"])
 @router.post("", response_model=ChatResponse)
 def create_chat_response(request: ChatRequest) -> ChatResponse:
     context = build_retrieval_context(request.message)
+    prompt = build_rag_prompt(
+        user_message=request.message,
+        context=context,
+    )
 
-    if not context:
+    try:
+        answer = generate_chat_completion(prompt)
+        response_message = "Chat response generated with RAG"
+    except ValueError:
         answer = (
-            "Bu soruyla ilgili ürün veri setinde eşleşen bir bilgi bulunamadı. "
-            "Lütfen ürün adı, kategori, marka veya özellik belirterek tekrar deneyin."
+            "OpenAI API key yapılandırılmadığı için RAG cevabı üretilemedi. "
+            "Lütfen yerel .env dosyasına OPENAI_API_KEY değerini ekleyin."
         )
-    else:
+        response_message = "OpenAI API key is not configured"
+    except RuntimeError:
         answer = (
-            "Kullanıcı mesajına göre ilgili ürün context'i oluşturuldu:\n\n"
-            f"{context}"
+            "RAG cevabı üretilirken bir servis hatası oluştu. "
+            "Lütfen daha sonra tekrar deneyin."
         )
+        response_message = "RAG response generation failed"
 
     return ChatResponse(
         success=True,
-        message="Chat response generated with retrieval context",
+        message=response_message,
         data=ChatResponseData(answer=answer),
     )

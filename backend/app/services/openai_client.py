@@ -1,4 +1,4 @@
-from openai import OpenAI
+from openai import OpenAI, OpenAIError
 
 from app.core.config import settings
 
@@ -13,22 +13,25 @@ def create_openai_client() -> OpenAI:
 def generate_chat_completion(prompt: str) -> str:
     client = create_openai_client()
 
-    response = client.chat.completions.create(
-        model=settings.openai_model,
-        messages=[
-            {
-                "role": "system",
-                "content": (
-                    "You are a helpful e-commerce assistant. "
-                    "Answer only based on the provided store context."
-                ),
-            },
-            {
-                "role": "user",
-                "content": prompt,
-            },
-        ],
-    )
+    try:
+        response = client.chat.completions.create(
+            model=settings.openai_model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a helpful e-commerce assistant. "
+                        "Answer only based on the provided store context."
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": prompt,
+                },
+            ],
+        )
+    except OpenAIError as exc:
+        raise RuntimeError("OpenAI request failed.") from exc
 
     content = response.choices[0].message.content
 
