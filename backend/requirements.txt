@@ -1,3 +1,5 @@
 fastapi
 uvicorn
 scalar-fastapi
+pydantic-settings
+openai
