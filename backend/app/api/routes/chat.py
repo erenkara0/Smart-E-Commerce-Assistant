@@ -1,12 +1,14 @@
 from fastapi import APIRouter
 
 from app.schemas.chat import ChatRequest, ChatResponse, ChatResponseData
-from app.services.openai_client import generate_chat_completion
+from app.services.openai_client import (
+    OpenAIServiceError,
+    generate_chat_completion,
+)
 from app.services.rag_fallbacks import (
     build_empty_model_answer,
     build_no_context_answer,
-    build_openai_config_error_answer,
-    build_rag_service_error_answer,
+    build_openai_error_fallback,
 )
 from app.services.rag_prompt_builder import build_rag_prompt
 from app.services.retrieval_context_builder import build_retrieval_context
@@ -34,12 +36,8 @@ def create_chat_response(request: ChatRequest) -> ChatResponse:
     try:
         answer = generate_chat_completion(prompt)
         response_message = "Chat response generated with RAG"
-    except ValueError:
-        answer = build_openai_config_error_answer()
-        response_message = "OpenAI API key is not configured"
-    except RuntimeError:
-        answer = build_rag_service_error_answer()
-        response_message = "RAG response generation failed"
+    except OpenAIServiceError as exc:
+        response_message, answer = build_openai_error_fallback(exc.code)
 
     if not answer.strip():
         answer = build_empty_model_answer()
