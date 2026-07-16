@@ -13,6 +13,8 @@ class Settings(BaseSettings):
 
     openai_api_key: str | None = None
     openai_model: str = "gpt-4o-mini"
+    openai_timeout_seconds: float = 30.0
+    openai_max_retries: int = 2
 
     retrieval_top_k: int = 2
     rag_max_context_chars: int = 4000
