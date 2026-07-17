@@ -83,3 +83,9 @@ backend/chroma_db/
 *.tmp
 *.temp
 .cache/
+# =========================
+# SQLite database files
+# =========================
+*.db
+*.db-shm
+*.db-wal

@@ -1,6 +1,7 @@
 from functools import lru_cache
 from pathlib import Path
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -9,7 +10,10 @@ ENV_FILE_PATH = ROOT_DIR / ".env"
 
 
 class Settings(BaseSettings):
-    environment: str = "development"
+    environment: str = Field(
+        default="development",
+        validation_alias="APP_ENV",
+    )
 
     openai_api_key: str | None = None
     openai_model: str = "gpt-4o-mini"
@@ -20,7 +24,8 @@ class Settings(BaseSettings):
     rag_max_context_chars: int = 4000
     vector_store_provider: str = "in_memory"
 
-    session_db_path: str = "backend/app/data/sessions.db"
+    sqlite_db_path: str = "./backend/storage/app.db"
+    session_memory_limit: int = 5
 
     langsmith_tracing: bool = False
     langsmith_api_key: str | None = None
