@@ -45,13 +45,17 @@ Proje, backend ve frontend taraflarının aynı repository içinde yönetildiği
 - TypeScript
 - Tailwind CSS
 
-### Planlanan RAG ve Gözlemlenebilirlik Araçları
+### RAG, Hafıza ve Gözlemlenebilirlik Araçları
 
-- LangChain
 - OpenAI API
-- ChromaDB
 - SQLite
 - LangSmith
+- In-memory vector store
+
+Planlanan sonraki entegrasyonlar:
+
+- LangChain
+- ChromaDB
 
 ### DevOps ve Ortam Yönetimi
 
@@ -60,6 +64,9 @@ Proje, backend ve frontend taraflarının aynı repository içinde yönetildiği
 - GitHub Issues
 - Pull Request akışı
 - Environment variables
+
+Planlanan DevOps araçları:
+
 - Docker
 - Docker Compose
 
@@ -89,8 +96,15 @@ Smart-E-Commerce-Assistant/
 │   │   │   ├── product.py
 │   │   │   └── response.py
 │   │   ├── services/
+│   │   │   ├── __init__.py
+│   │   │   ├── conversation_context_builder.py
+│   │   │   ├── openai_client.py
 │   │   │   ├── product_document_builder.py
 │   │   │   ├── product_loader.py
+│   │   │   ├── rag_fallbacks.py
+│   │   │   ├── rag_prompt_builder.py
+│   │   │   ├── retrieval_context_builder.py
+│   │   │   ├── session_memory_service.py
 │   │   │   └── vector_store_service.py
 │   │   ├── __init__.py
 │   │   └── main.py
@@ -109,7 +123,9 @@ Smart-E-Commerce-Assistant/
 │
 ├── docs/
 │   ├── brand/
-│   └── design/
+│   ├── design/
+│   └── testing/
+│       └── m4-rag-session-validation.md
 │
 ├── .env.example
 ├── .gitignore
@@ -121,59 +137,65 @@ Smart-E-Commerce-Assistant/
 
 ## 4. M0: Proje Kimliği ve Teknik Planlama
 
-Bu aşamada projenin genel amacı, teknik kapsamı ve tasarım yaklaşımı belirlenir.
+Bu aşamada projenin genel amacı, teknik kapsamı ve tasarım yaklaşımı belirlendi.
 
-Bu kapsamda:
+Tamamlanan işler:
 
-- Proje amacı tanımlanır.
-- Kullanılacak teknolojiler belirlenir.
-- Monorepo yaklaşımı seçilir.
-- Tasarım sistemi için temel renk, font ve arayüz kararları hazırlanır.
-- Proje fazları milestone yapısına bölünür.
-- GitHub Projects üzerinde iş takibi planlanır.
+- Proje amacı tanımlandı.
+- Kullanılacak teknolojiler belirlendi.
+- Monorepo yaklaşımı seçildi.
+- Tasarım sistemi için temel renk, font ve arayüz kararları hazırlandı.
+- Proje fazları milestone yapısına bölündü.
+- GitHub Projects üzerinde iş takibi planlandı.
+
+**M0 durumu:** Tamamlandı.
 
 ---
 
 ## 5. M1: Temel Kurulum ve Güvenlik
 
-Bu aşamada backend ve frontend için temel geliştirme ortamı hazırlanır.
+Bu aşamada backend ve frontend için temel geliştirme ortamı hazırlandı.
 
-Yapılacak işler:
+Tamamlanan işler:
 
-- Backend için FastAPI proje iskeleti oluşturulur.
-- Frontend için Next.js projesi hazırlanır.
-- Kök dizinde ortak `.gitignore` dosyası oluşturulur.
-- `.env.example` dosyası hazırlanır.
-- Gerçek `.env` dosyasının Git takibine alınması engellenir.
-- Backend ve frontend bağımlılıkları ayrı ayrı yönetilir.
-- Proje klasör yapısı düzenlenir.
+- Backend için FastAPI proje iskeleti oluşturuldu.
+- Frontend için Next.js projesi hazırlandı.
+- Kök dizinde ortak `.gitignore` dosyası oluşturuldu.
+- `.env.example` dosyası hazırlandı.
+- Gerçek `.env` dosyasının Git takibine alınması engellendi.
+- Backend ve frontend bağımlılıkları ayrı ayrı yönetildi.
+- Proje klasör yapısı düzenlendi.
 
-Bu aşamanın amacı, güvenli ve sürdürülebilir bir geliştirme ortamı oluşturmaktır.
+Bu aşamada güvenli ve sürdürülebilir bir geliştirme ortamının temeli oluşturuldu.
+
+**M1 durumu:** Tamamlandı.
 
 ---
 
 ## 6. M2: FastAPI, Scalar API ve İlk Dikey Dilim
 
-Bu aşamada backend tarafında temel API yapısı oluşturulur.
+Bu aşamada backend tarafında temel API yapısı oluşturuldu.
 
-Yapılan ve planlanan işler:
+Tamamlanan işler:
 
-- FastAPI uygulaması yapılandırılır.
-- Scalar API Reference entegre edilir.
-- `GET /` root endpoint’i oluşturulur.
-- `GET /health` sağlık kontrol endpoint’i eklenir.
-- Genel API response formatı belirlenir.
-- Chat request ve response şemaları oluşturulur.
-- `POST /chat` endpoint’i ile ilk dikey API akışı hazırlanır.
-- Hata cevapları için exception handler yapısı eklenir.
+- FastAPI uygulaması yapılandırıldı.
+- Scalar API Reference entegre edildi.
+- `GET /` root endpoint’i oluşturuldu.
+- `GET /health` endpoint’i eklendi.
+- Genel API response formatı belirlendi.
+- Chat request ve response şemaları oluşturuldu.
+- `POST /chat` endpoint’i ile ilk dikey API akışı hazırlandı.
+- Hata cevapları için exception handler yapısı eklendi.
 
 Bu aşamanın amacı, yapay zeka entegrasyonundan önce temel API akışının çalıştığını doğrulamaktır.
+
+**M2 durumu:** Tamamlandı.
 
 ---
 
 ## 7. M3: Veri Hazırlığı ve Vektör Arama Altyapısı
 
-Bu aşamada RAG sisteminde kullanılacak ürün verisinin hazırlanması ve arama altyapısının temelinin oluşturulması hedeflenir.
+Bu aşamada RAG sisteminde kullanılacak ürün verisinin hazırlanması ve arama altyapısının temelinin oluşturulması hedeflendi.
 
 ### Tamamlanan Geliştirmeler
 
@@ -191,27 +213,44 @@ Mevcut arama yapısı henüz gerçek embedding veya ChromaDB kullanmamaktadır. 
 
 Bu yapı ilerleyen aşamalarda şu geliştirmelere temel oluşturacaktır:
 
-- Ürün metinlerinin embedding formatına dönüştürülmesi
+- Ürün metinleri için embedding vektörlerinin üretilmesi
 - ChromaDB üzerinde vektör olarak saklanması
 - Kullanıcı sorgularına göre semantic search yapılması
-- Bulunan bağlamın RAG cevap üretiminde kullanılması
+
+**M3 durumu:** Tamamlandı.
 
 ---
 
 ## 8. M4: RAG Mimarisi, Oturum Hafızası ve LangSmith
 
-Bu aşamada temel ürün arama altyapısı gerçek RAG mimarisine dönüştürülecektir.
+Bu aşamada temel ürün arama altyapısı, mağaza verilerine dayalı cevap üreten ve konuşma geçmişini koruyan bir RAG akışına dönüştürüldü.
 
-Planlanan işler:
+Tamamlanan işler:
 
-- OpenAI API entegrasyonu yapılır.
-- LangChain ile RAG zinciri oluşturulur.
-- Kullanıcı sorusu embedding veya retrieval sistemiyle ilgili ürün dokümanları üzerinde aranır.
-- Bulunan bağlam LLM’e kontrollü şekilde verilir.
-- Modelin yalnızca verilen mağaza verisine göre cevap üretmesi sağlanır.
-- SQLite ile oturum hafızası eklenir.
-- Son mesajları dikkate alan sınırlı konuşma geçmişi yapısı oluşturulur.
-- LangSmith ile çağrı takibi, token kullanımı, gecikme süresi ve hata izleme yapılır.
+- OpenAI API entegrasyonu yapıldı.
+- İlgili ürün dokümanlarını bulan retrieval context yapısı chat akışına bağlandı.
+- Bulunan mağaza bağlamını kontrollü şekilde modele ileten RAG prompt yapısı oluşturuldu.
+- Modelin mağaza bağlamı dışında ürün, fiyat, stok veya teknik özellik uydurma riskini azaltmayı amaçlayan prompt kuralları eklendi.
+- OpenAI authentication, rate limit, timeout, bağlantı ve servis hataları için kontrollü hata yönetimi eklendi.
+- Hata ve boş model cevabı durumları için kullanıcı dostu fallback mesajları oluşturuldu.
+- SQLite tabanlı kalıcı oturum hafızası eklendi.
+- Yeni konuşmalar için otomatik `session_id` üretimi sağlandı.
+- Aynı `session_id` altında kullanıcı ve asistan mesajlarının saklanması sağlandı.
+- Son mesajları dikkate alan sınırlı konuşma geçmişi RAG prompt’una eklendi.
+- Önceki kullanıcı mesajları retrieval sorgusuna dahil edilerek “bunun fiyatı nedir?” gibi devam soruları desteklendi.
+- Backend yeniden başlatıldığında konuşma geçmişinin SQLite üzerinden korunması sağlandı.
+- LangSmith ile OpenAI çağrılarının trace, token kullanımı ve gecikme süresi takibi eklendi.
+- RAG, oturum hafızası ve LangSmith doğrulama adımları
+  [M4 doğrulama notlarında](docs/testing/m4-rag-session-validation.md)
+  dokümante edildi.
+
+Teknik yaklaşım:
+
+- Mevcut M4 kapsamında özel servislerden oluşan doğrudan OpenAI tabanlı RAG akışı kullanıldı.
+- Vector store sağlayıcısı olarak mevcut in-memory yapı korundu.
+- LangChain ve ChromaDB entegrasyonları sonraki geliştirme aşamalarına bırakıldı.
+
+**M4 durumu:** Tamamlandı.
 
 ---
 
@@ -238,7 +277,7 @@ Bu aşamada sistem daha güvenli, taşınabilir ve çalıştırılabilir hale ge
 Planlanan işler:
 
 - Prompt injection risklerine karşı temel guardrail kuralları eklenir.
-- Modelin mağaza verisi dışına çıkmasını azaltacak sistem talimatları hazırlanır.
+- Mevcut sistem talimatları prompt injection, veri dışına çıkma ve kötü niyetli yönlendirme senaryolarına karşı güçlendirilir.
 - CORS ayarları yapılandırılır.
 - Eski veya gereksiz oturum verilerinin temizlenmesi için yapı oluşturulur.
 - Backend için Dockerfile hazırlanır.
@@ -257,7 +296,7 @@ Planlanan işler:
 - Backend endpointleri manuel ve otomatik testlerle kontrol edilir.
 - Ürün listeleme ve ürün arama akışları doğrulanır.
 - Chat akışı test edilir.
-- README güncellenir.
+- README proje final durumuyla uyumlu hâle getirilir.
 - API kullanım notları eklenir.
 - Kurulum ve çalıştırma adımları netleştirilir.
 - Final sunum içeriği hazırlanır.
