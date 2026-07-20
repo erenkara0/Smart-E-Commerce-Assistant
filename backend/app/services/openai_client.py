@@ -1,3 +1,7 @@
+import logging
+import os
+
+from langsmith.wrappers import wrap_openai
 from openai import (
     APIConnectionError,
     APIStatusError,
@@ -13,7 +17,7 @@ from openai import (
 
 from app.core.config import settings
 
-
+logger = logging.getLogger(__name__)
 class OpenAIServiceError(RuntimeError):
     def __init__(self, code: str, message: str) -> None:
         super().__init__(message)
@@ -27,11 +31,27 @@ def create_openai_client() -> OpenAI:
             message="OPENAI_API_KEY is not configured.",
         )
 
-    return OpenAI(
+    client = OpenAI(
         api_key=settings.openai_api_key,
         timeout=settings.openai_timeout_seconds,
         max_retries=settings.openai_max_retries,
     )
+
+    if not settings.langsmith_tracing:
+        return client
+
+    if not settings.langsmith_api_key:
+        logger.warning(
+            "LangSmith tracing is enabled but LANGSMITH_API_KEY is not configured."
+        )
+        return client
+
+    os.environ["LANGSMITH_TRACING"] = "true"
+    os.environ["LANGSMITH_API_KEY"] = settings.langsmith_api_key
+    os.environ["LANGSMITH_PROJECT"] = settings.langsmith_project
+    os.environ["LANGSMITH_ENDPOINT"] = settings.langsmith_endpoint
+
+    return wrap_openai(client)
 
 
 def generate_chat_completion(prompt: str) -> str:

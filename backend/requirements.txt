@@ -3,3 +3,4 @@ uvicorn
 scalar-fastapi
 pydantic-settings
 openai
+langsmith

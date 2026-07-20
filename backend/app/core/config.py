@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     langsmith_tracing: bool = False
     langsmith_api_key: str | None = None
     langsmith_project: str = "smart-e-commerce-assistant"
+    langsmith_endpoint: str = "https://api.smith.langchain.com"
 
     model_config = SettingsConfigDict(
         env_file=ENV_FILE_PATH,
