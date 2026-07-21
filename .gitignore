@@ -89,3 +89,4 @@ backend/chroma_db/
 *.db
 *.db-shm
 *.db-wal
+*.tsbuildinfo
