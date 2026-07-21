@@ -1,6 +1,11 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+} from "react";
 
 type ChatMessage = {
   id: string;
@@ -29,6 +34,13 @@ export default function Home() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [messages, isLoading]);
 
   async function sendMessage(content: string) {
     const cleanedMessage = content.trim();
@@ -193,6 +205,7 @@ export default function Home() {
               </div>
             )}
           </div>
+          <div ref={messagesEndRef} />
 
           <div className="border-t border-slate-200 bg-white p-4 sm:p-6">
             <form
