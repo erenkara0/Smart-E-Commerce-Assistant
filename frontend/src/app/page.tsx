@@ -1,4 +1,48 @@
+"use client";
+
+import { FormEvent, useState } from "react";
+
+type ChatMessage = {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+};
+
+const suggestedQuestions = [
+  "Oyun için laptop önerir misin?",
+  "Stokta bulunan ASUS modelleri neler?",
+  "En yüksek puanlı ürün hangisi?",
+  "Bütçeme uygun ürün önerir misin?",
+];
+
 export default function Home() {
+  const [messageInput, setMessageInput] = useState("");
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+
+  function sendMessage(content: string) {
+    const cleanedMessage = content.trim();
+
+    if (!cleanedMessage) {
+      return;
+    }
+
+    setMessages((currentMessages) => [
+      ...currentMessages,
+      {
+        id: crypto.randomUUID(),
+        role: "user",
+        content: cleanedMessage,
+      },
+    ]);
+
+    setMessageInput("");
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    sendMessage(messageInput);
+  }
+
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900">
       <header className="border-b border-slate-200 bg-white">
@@ -25,55 +69,58 @@ export default function Home() {
 
       <main className="mx-auto flex min-h-[calc(100vh-73px)] max-w-5xl flex-col px-4 py-6 sm:px-6">
         <section className="flex flex-1 flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-          <div className="flex flex-1 items-center justify-center p-6">
-            <div className="max-w-xl text-center">
-              <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-2xl font-bold text-[#2563EB]">
-                M
+          <div className="flex flex-1 overflow-y-auto p-6">
+            {messages.length === 0 ? (
+              <div className="m-auto max-w-xl text-center">
+                <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-2xl font-bold text-[#2563EB]">
+                  M
+                </div>
+
+                <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                  Size nasıl yardımcı olabilirim?
+                </h1>
+
+                <p className="mt-3 text-sm leading-6 text-slate-500 sm:text-base">
+                  Ürün, fiyat, stok ve teknik özellikler hakkında mağaza
+                  verilerine dayalı sorular sorabilirsiniz.
+                </p>
+
+                <div className="mt-8 grid gap-3 text-left sm:grid-cols-2">
+                  {suggestedQuestions.map((question) => (
+                    <button
+                      key={question}
+                      type="button"
+                      onClick={() => sendMessage(question)}
+                      className="rounded-2xl border border-slate-200 p-4 text-sm transition hover:border-blue-300 hover:bg-blue-50"
+                    >
+                      {question}
+                    </button>
+                  ))}
+                </div>
               </div>
-
-              <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                Size nasıl yardımcı olabilirim?
-              </h1>
-
-              <p className="mt-3 text-sm leading-6 text-slate-500 sm:text-base">
-                Ürün, fiyat, stok ve teknik özellikler hakkında mağaza
-                verilerine dayalı sorular sorabilirsiniz.
-              </p>
-
-              <div className="mt-8 grid gap-3 text-left sm:grid-cols-2">
-                <button
-                  type="button"
-                  className="rounded-2xl border border-slate-200 p-4 text-sm transition hover:border-blue-300 hover:bg-blue-50"
-                >
-                  Oyun için laptop önerir misin?
-                </button>
-
-                <button
-                  type="button"
-                  className="rounded-2xl border border-slate-200 p-4 text-sm transition hover:border-blue-300 hover:bg-blue-50"
-                >
-                  Stokta bulunan ASUS modelleri neler?
-                </button>
-
-                <button
-                  type="button"
-                  className="rounded-2xl border border-slate-200 p-4 text-sm transition hover:border-blue-300 hover:bg-blue-50"
-                >
-                  En yüksek puanlı ürün hangisi?
-                </button>
-
-                <button
-                  type="button"
-                  className="rounded-2xl border border-slate-200 p-4 text-sm transition hover:border-blue-300 hover:bg-blue-50"
-                >
-                  Bütçeme uygun ürün önerir misin?
-                </button>
+            ) : (
+              <div className="flex w-full flex-col gap-4">
+                {messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={
+                      message.role === "user"
+                        ? "ml-auto max-w-[80%] rounded-2xl rounded-br-md bg-[#2563EB] px-4 py-3 text-sm leading-6 text-white"
+                        : "mr-auto max-w-[80%] rounded-2xl rounded-bl-md bg-slate-100 px-4 py-3 text-sm leading-6 text-slate-800"
+                    }
+                  >
+                    {message.content}
+                  </div>
+                ))}
               </div>
-            </div>
+            )}
           </div>
 
           <div className="border-t border-slate-200 bg-white p-4 sm:p-6">
-            <form className="mx-auto flex max-w-3xl items-end gap-3">
+            <form
+              onSubmit={handleSubmit}
+              className="mx-auto flex max-w-3xl items-end gap-3"
+            >
               <label htmlFor="chat-message" className="sr-only">
                 Mesajınız
               </label>
@@ -82,13 +129,16 @@ export default function Home() {
                 id="chat-message"
                 name="message"
                 rows={1}
+                value={messageInput}
+                onChange={(event) => setMessageInput(event.target.value)}
                 placeholder="Ürünler hakkında bir soru sorun..."
                 className="min-h-12 flex-1 resize-none rounded-2xl border border-slate-300 px-4 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-[#2563EB] focus:ring-4 focus:ring-blue-100"
               />
 
               <button
-                type="button"
-                className="h-12 rounded-2xl bg-[#2563EB] px-5 text-sm font-medium text-white transition hover:bg-[#1E40AF]"
+                type="submit"
+                disabled={!messageInput.trim()}
+                className="h-12 rounded-2xl bg-[#2563EB] px-5 text-sm font-medium text-white transition hover:bg-[#1E40AF] disabled:cursor-not-allowed disabled:bg-slate-300"
               >
                 Gönder
               </button>
