@@ -1,11 +1,20 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useState, type FormEvent } from "react";
 
 type ChatMessage = {
   id: string;
   role: "user" | "assistant";
   content: string;
+};
+
+type ChatApiResponse = {
+  success: boolean;
+  message: string;
+  data: {
+    session_id: string;
+    answer: string;
+  } | null;
 };
 
 const suggestedQuestions = [
@@ -18,29 +27,88 @@ const suggestedQuestions = [
 export default function Home() {
   const [messageInput, setMessageInput] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  function sendMessage(content: string) {
+  async function sendMessage(content: string) {
     const cleanedMessage = content.trim();
 
-    if (!cleanedMessage) {
+    if (!cleanedMessage || isLoading) {
       return;
     }
 
+    const userMessage: ChatMessage = {
+      id: crypto.randomUUID(),
+      role: "user",
+      content: cleanedMessage,
+    };
+
     setMessages((currentMessages) => [
       ...currentMessages,
-      {
-        id: crypto.randomUUID(),
-        role: "user",
-        content: cleanedMessage,
-      },
+      userMessage,
     ]);
-
     setMessageInput("");
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: cleanedMessage,
+          ...(sessionId ? { session_id: sessionId } : {}),
+        }),
+      });
+
+      const responseBody =
+        (await response.json()) as ChatApiResponse;
+
+      if (
+        !response.ok ||
+        !responseBody.success ||
+        !responseBody.data
+      ) {
+        throw new Error(
+          responseBody.message || "Asistan yanıtı alınamadı.",
+        );
+      }
+
+      const chatData = responseBody.data;
+
+      setSessionId(chatData.session_id);
+
+      setMessages((currentMessages) => [
+        ...currentMessages,
+        {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          content: chatData.answer,
+        },
+      ]);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Beklenmeyen bir hata oluştu.";
+
+      setMessages((currentMessages) => [
+        ...currentMessages,
+        {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          content: `Üzgünüm, yanıt oluşturulamadı. ${errorMessage}`,
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    sendMessage(messageInput);
+    void sendMessage(messageInput);
   }
 
   return (
@@ -61,8 +129,12 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-2 text-sm text-slate-600">
-            <span className="h-2.5 w-2.5 rounded-full bg-green-500" />
-            Sistem hazır
+            <span
+              className={`h-2.5 w-2.5 rounded-full ${
+                isLoading ? "bg-amber-500" : "bg-green-500"
+              }`}
+            />
+            {isLoading ? "Yanıt hazırlanıyor" : "Sistem hazır"}
           </div>
         </div>
       </header>
@@ -90,7 +162,7 @@ export default function Home() {
                     <button
                       key={question}
                       type="button"
-                      onClick={() => sendMessage(question)}
+                      onClick={() => void sendMessage(question)}
                       className="rounded-2xl border border-slate-200 p-4 text-sm transition hover:border-blue-300 hover:bg-blue-50"
                     >
                       {question}
@@ -105,13 +177,19 @@ export default function Home() {
                     key={message.id}
                     className={
                       message.role === "user"
-                        ? "ml-auto max-w-[80%] rounded-2xl rounded-br-md bg-[#2563EB] px-4 py-3 text-sm leading-6 text-white"
-                        : "mr-auto max-w-[80%] rounded-2xl rounded-bl-md bg-slate-100 px-4 py-3 text-sm leading-6 text-slate-800"
+                        ? "ml-auto max-w-[80%] whitespace-pre-wrap rounded-2xl rounded-br-md bg-[#2563EB] px-4 py-3 text-sm leading-6 text-white"
+                        : "mr-auto max-w-[80%] whitespace-pre-wrap rounded-2xl rounded-bl-md bg-slate-100 px-4 py-3 text-sm leading-6 text-slate-800"
                     }
                   >
                     {message.content}
                   </div>
                 ))}
+
+                {isLoading && (
+                  <div className="mr-auto max-w-[80%] rounded-2xl rounded-bl-md bg-slate-100 px-4 py-3 text-sm text-slate-500">
+                    Yanıt hazırlanıyor...
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -130,17 +208,20 @@ export default function Home() {
                 name="message"
                 rows={1}
                 value={messageInput}
-                onChange={(event) => setMessageInput(event.target.value)}
+                onChange={(event) =>
+                  setMessageInput(event.target.value)
+                }
+                disabled={isLoading}
                 placeholder="Ürünler hakkında bir soru sorun..."
-                className="min-h-12 flex-1 resize-none rounded-2xl border border-slate-300 px-4 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-[#2563EB] focus:ring-4 focus:ring-blue-100"
+                className="min-h-12 flex-1 resize-none rounded-2xl border border-slate-300 px-4 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-[#2563EB] focus:ring-4 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-100"
               />
 
               <button
                 type="submit"
-                disabled={!messageInput.trim()}
+                disabled={!messageInput.trim() || isLoading}
                 className="h-12 rounded-2xl bg-[#2563EB] px-5 text-sm font-medium text-white transition hover:bg-[#1E40AF] disabled:cursor-not-allowed disabled:bg-slate-300"
               >
-                Gönder
+                {isLoading ? "Bekleyin" : "Gönder"}
               </button>
             </form>
 
