@@ -28,8 +28,8 @@ export function ChatMessageList({
           key={message.id}
           className={
             message.role === "user"
-              ? "ml-auto max-w-[80%] whitespace-pre-wrap rounded-2xl rounded-br-md bg-[#2563EB] px-4 py-3 text-sm leading-6 text-white"
-              : "mr-auto max-w-[80%] whitespace-pre-wrap rounded-2xl rounded-bl-md bg-slate-100 px-4 py-3 text-sm leading-6 text-slate-800"
+              ? "ml-auto min-w-0 max-w-[85%] whitespace-pre-wrap break-words [overflow-wrap:anywhere] rounded-2xl rounded-br-md bg-[#2563EB] px-4 py-3 text-sm leading-6 text-white sm:max-w-[80%]"
+              : "mr-auto min-w-0 max-w-[85%] whitespace-pre-wrap break-words [overflow-wrap:anywhere] rounded-2xl rounded-bl-md bg-slate-100 px-4 py-3 text-sm leading-6 text-slate-800 sm:max-w-[80%]"
           }
         >
           {message.content}
