@@ -254,19 +254,34 @@ Teknik yaklaşım:
 
 ---
 
-## 9. M5: Frontend Chat Arayüzü
+## 9. ## M5 — Frontend Sohbet Arayüzü
 
-Bu aşamada kullanıcıların asistanla etkileşime geçeceği frontend arayüzü geliştirilecektir.
+**Durum:** Tamamlandı
 
-Planlanan işler:
+### Tamamlanan Çalışmalar
 
-- Chat sayfası tasarlanır.
-- Kullanıcı mesaj girişi eklenir.
-- Backend `POST /chat` endpoint’i ile bağlantı kurulur.
-- Loading, hata ve başarılı cevap durumları yönetilir.
-- Mesaj geçmişi arayüzde gösterilir.
-- Session tabanlı konuşma akışı desteklenir.
-- Mobil uyumlu temel tasarım düzenlemeleri yapılır.
+- Next.js ile responsive sohbet arayüzü oluşturuldu.
+- Frontend ile FastAPI backend arasında Next.js API proxy bağlantısı kuruldu.
+- Kullanıcı ve asistan mesaj balonları eklendi.
+- Önerilen soru butonları oluşturuldu.
+- `session_id` ile konuşma devamlılığı sağlandı.
+- Yüklenme ve backend bağlantı hata durumları eklendi.
+- Yeni sohbet özelliği ile mesaj ve oturum sıfırlama işlemi gerçekleştirildi.
+- Yeni mesajlar için otomatik kaydırma eklendi.
+- Enter ile gönderme ve Shift + Enter ile yeni satır davranışları eklendi.
+- Mesaj kutusunun içeriğe göre otomatik büyümesi sağlandı.
+- Uzun mesaj ve bağlantıların taşması engellendi.
+- Mobil, tablet ve masaüstü responsive düzenlemeleri tamamlandı.
+- Sohbet arayüzü yeniden kullanılabilir React bileşenlerine ayrıldı.
+- Sohbet state ve API işlemleri `useChat` custom hook içinde toplandı.
+- Ortak TypeScript tipleri ayrı bir dosyada tanımlandı.
+- Lint, production build ve manuel uçtan uca testler başarıyla tamamlandı.
+
+### Doğrulama
+
+Manuel test sonuçları aşağıdaki dosyada kayıt altına alındı:
+
+`docs/m5-chat-interface-validation.md`
 
 ---
 
