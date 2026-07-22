@@ -109,7 +109,27 @@ Smart-E-Commerce-Assistant/
 ├── frontend/
 │   ├── public/
 │   ├── src/
-│   │   └── app/
+│   │   ├── app/
+│   │   │   ├── api/
+│   │   │   │   └── chat/
+│   │   │   │       └── route.ts
+│   │   │   ├── globals.css
+│   │   │   ├── layout.tsx
+│   │   │   └── page.tsx
+│   │   ├── components/
+│   │   │   └── chat/
+│   │   │       ├── chat-header.tsx
+│   │   │       ├── chat-input.tsx
+│   │   │       ├── chat-interface.tsx
+│   │   │       ├── chat-message-list.tsx
+│   │   │       └── chat-welcome.tsx
+│   │   ├── hooks/
+│   │   │   └── use-chat.ts
+│   │   ├── lib/
+│   │   │   └── api.ts
+│   │   └── types/
+│   │       └── chat.ts
+│   ├── .env.example
 │   ├── package.json
 │   ├── package-lock.json
 │   ├── next.config.ts
@@ -219,3 +239,37 @@ Gerçek `LANGSMITH_API_KEY` değeri yalnızca yerel `.env` dosyasında saklanmal
 RAG cevap üretimi, SQLite oturum hafızası ve LangSmith gözlemlenebilirlik testleri için:
 
 [M4 RAG ve Oturum Hafızası Doğrulama Notları](docs/testing/m4-rag-session-validation.md)
+
+## M5 Frontend Sohbet Arayüzü
+
+MikroAsistan frontend uygulaması, Next.js API proxy üzerinden FastAPI backend servisine bağlanan duyarlı bir sohbet deneyimi sunar.
+
+### Tamamlanan Özellikler
+
+- Mobil, tablet ve masaüstü için duyarlı sohbet arayüzü
+- Önerilen soru butonları
+- Kullanıcı ve asistan mesaj balonları
+- `/api/chat` üzerinden backend entegrasyonu
+- `session_id` kullanılarak konuşma devamlılığı
+- Yüklenme ve backend hata durumları
+- Yeni mesajlar için otomatik kaydırma
+- Mesajları ve oturumu sıfırlayan yeni sohbet özelliği
+- Enter ile mesaj gönderme
+- Shift + Enter ile yeni satır oluşturma
+- İçeriğe göre otomatik büyüyen mesaj kutusu
+- Uzun mesajların ve bağlantıların satır içine sığdırılması
+- Yeniden kullanılabilir React bileşenleri ve ortak TypeScript tipleri
+- Sohbet state ve API işlemlerinin özel hook üzerinden yönetilmesi
+
+### Frontend Doğrulama
+
+M5 sohbet arayüzü aşağıdaki komutlarla doğrulandı:
+
+```bash
+npm run lint
+npm run build
+```
+Tüm testler başarıyla tamamlandı. Ayrıntılı manuel test sonuçları aşağıdaki dosyada kayıt altına alındı:
+```bash
+/m5-chat-interface-validation.md
+```
