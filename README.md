@@ -347,3 +347,20 @@ docker compose down -v
 ```
 
 > `-v` seçeneği SQLite verilerini kalıcı olarak silebileceği için dikkatli kullanılmalıdır.
+
+## Backend Testlerini Çalıştırma
+
+Backend test bağımlılıklarını yüklemek için:
+
+```bash
+cd backend
+python -m pip install -r requirements-dev.txt
+```
+
+Testleri çalıştırmak için:
+
+```bash
+python -m pytest
+```
+
+Testler geçici ve izole bir SQLite veritabanı kullanır; geliştirme veritabanındaki veriler değiştirilmez.
