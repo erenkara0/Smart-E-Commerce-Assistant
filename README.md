@@ -347,3 +347,43 @@ docker compose down -v
 ```
 
 > `-v` seçeneği SQLite verilerini kalıcı olarak silebileceği için dikkatli kullanılmalıdır.
+
+## Backend Testlerini Çalıştırma
+
+Backend test bağımlılıklarını yüklemek için:
+
+```bash
+cd backend
+python -m pip install -r requirements-dev.txt
+```
+
+Testleri çalıştırmak için:
+
+```bash
+python -m pytest
+```
+
+Testler geçici ve izole bir SQLite veritabanı kullanır; geliştirme veritabanındaki veriler değiştirilmez.
+
+### Test Kapsamı
+
+Mevcut backend test paketi aşağıdaki senaryoları doğrular:
+
+- Root ve health endpoint yanıtları
+- Ürün listesinin ve zorunlu ürün alanlarının doğrulanması
+- Geçerli chat isteğinin başarılı yanıt üretmesi
+- Boş mesaj ve eksik istek gövdesi için doğrulama hataları
+- Otomatik session ID oluşturulması
+- Mevcut session ID'nin yeniden kullanılması
+- Takip mesajlarında konuşma geçmişinin korunması
+- Ürün bağlamı bulunamadığında fallback yanıtı
+- OpenAI rate limit, timeout ve bağlantı hatası fallback yanıtları
+- Modelin boş cevap vermesi durumundaki fallback yanıtı
+
+Testlerde harici OpenAI istekleri `monkeypatch` kullanılarak mock'lanır. Bu nedenle test paketi gerçek bir OpenAI API anahtarı gerektirmez ve dış servise istek göndermez.
+
+Tam test paketi başarıyla çalıştığında mevcut sonuç:
+
+```text
+15 passed
+```
