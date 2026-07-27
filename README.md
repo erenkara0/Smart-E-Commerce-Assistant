@@ -166,13 +166,37 @@ Backend çalıştıktan sonra aşağıdaki adresler kullanılabilir:
 
 ## Ortam Değişkenleri
 
-Proje kökündeki `.env.example` dosyasını temel alarak yerel bir `.env` dosyası oluşturun.
+Backend ve Docker Compose yapılandırması için proje kökündeki örnek dosyayı kopyalayın:
 
-Temel ortam değişkenleri:
+```powershell
+Copy-Item .env.example .env
+```
+
+Yerel frontend yapılandırması için:
+
+```powershell
+Copy-Item frontend/.env.example frontend/.env.local
+```
+
+Backend tarafından kullanılan temel değişkenler:
 
 ```env
+APP_ENV=development
+
+CORS_ALLOWED_ORIGINS=["http://localhost:3000","http://127.0.0.1:3000"]
+CORS_ALLOW_CREDENTIALS=false
+
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-4o-mini
+OPENAI_TIMEOUT_SECONDS=30
+OPENAI_MAX_RETRIES=2
+
+RETRIEVAL_TOP_K=2
+RAG_MAX_CONTEXT_CHARS=4000
+VECTOR_STORE_PROVIDER=in_memory
+
+SQLITE_DB_PATH=./backend/storage/app.db
+SESSION_MEMORY_LIMIT=5
 
 LANGSMITH_TRACING=false
 LANGSMITH_API_KEY=
@@ -180,12 +204,21 @@ LANGSMITH_PROJECT=smart-e-commerce-assistant
 LANGSMITH_ENDPOINT=https://api.smith.langchain.com
 ```
 
-Gerçek API anahtarları `.env.example` dosyasına veya Git repository’sine eklenmemelidir.
+Frontend’in backend servisine bağlanmak için kullandığı değişken:
 
-LangSmith takibi kullanılacaksa yerel `.env` dosyasındaki değer şu şekilde etkinleştirilmelidir:
+```env
+BACKEND_API_BASE_URL=http://127.0.0.1:8000
+```
+
+Docker Compose çalıştırıldığında frontend için backend adresi otomatik olarak `http://backend:8000` şeklinde ayarlanır.
+
+Gerçek API anahtarları `.env.example`, `frontend/.env.example` veya Git repository’sine eklenmemelidir.
+
+LangSmith takibi kullanılacaksa yerel `.env` dosyasında aşağıdaki değişkenler ayarlanmalıdır:
 
 ```env
 LANGSMITH_TRACING=true
+LANGSMITH_API_KEY=your_api_key
 ```
 
 ## Temel API Endpoint’leri
@@ -387,3 +420,57 @@ Tam test paketi başarıyla çalıştığında mevcut sonuç:
 ```text
 15 passed
 ```
+
+## Demo Akışı
+
+1. Uygulama Docker Compose ile başlatılır:
+
+```powershell
+docker compose up --build -d
+```
+
+2. Backend sağlık durumu kontrol edilir:
+
+```powershell
+Invoke-RestMethod http://localhost:8000/health
+```
+
+3. Tarayıcıdan frontend açılır:
+
+```text
+http://localhost:3000
+```
+
+4. Kullanıcı aşağıdaki örnek mesajı gönderir:
+
+```text
+Oyun için uygun bir laptop önerir misin?
+```
+
+5. Asistanın mağaza veri setine bağlı ürün önerisi, fiyat, stok ve özellik bilgileri sunduğu doğrulanır.
+
+6. Aynı sohbet içinde takip sorusu gönderilerek konuşma geçmişi test edilir:
+
+```text
+Önerdiğin ürünün stok ve fiyat bilgisi nedir?
+```
+
+7. **Yeni Sohbet** butonuyla önceki mesajların temizlendiği ve yeni bir oturum oluşturulduğu doğrulanır.
+
+8. Demo tamamlandıktan sonra servisler durdurulur:
+
+```powershell
+docker compose down
+```
+
+## Son Doğrulama Sonuçları
+
+- Backend test paketi: `15 passed`
+- Frontend production build: başarılı
+- Docker Compose backend servisi: `healthy`
+- Docker Compose frontend servisi: çalışıyor
+- Backend health endpoint’i: başarılı
+- Frontend HTTP yanıtı: `200`
+- Chat mesajlaşma akışı: başarılı
+- Konuşma geçmişi: başarılı
+- Yeni sohbet akışı: başarılı
