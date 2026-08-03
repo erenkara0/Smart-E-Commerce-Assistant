@@ -233,3 +233,84 @@ class ProductExcelParseResult(BaseModel):
     errors: list[ProductImportValidationError] = Field(
         default_factory=list,
     )
+
+class ProductPersistenceError(BaseModel):
+    product_id: str | None = Field(
+        default=None,
+        description="Product identifier related to the persistence error.",
+    )
+    sku: str | None = Field(
+        default=None,
+        description="SKU related to the persistence error.",
+    )
+    message: str = Field(
+        ...,
+        min_length=1,
+        description="Human-readable persistence error.",
+    )
+
+
+class ProductDatabaseImportResult(BaseModel):
+    total_products: int = Field(
+        default=0,
+        ge=0,
+    )
+    created: int = Field(
+        default=0,
+        ge=0,
+    )
+    updated: int = Field(
+        default=0,
+        ge=0,
+    )
+    unchanged: int = Field(
+        default=0,
+        ge=0,
+    )
+    failed: int = Field(
+        default=0,
+        ge=0,
+    )
+    errors: list[ProductPersistenceError] = Field(
+        default_factory=list,
+    )
+
+class ProductExcelImportResult(BaseModel):
+    total_rows: int = Field(
+        default=0,
+        ge=0,
+    )
+    valid_rows: int = Field(
+        default=0,
+        ge=0,
+    )
+    invalid_rows: int = Field(
+        default=0,
+        ge=0,
+    )
+    created: int = Field(
+        default=0,
+        ge=0,
+    )
+    updated: int = Field(
+        default=0,
+        ge=0,
+    )
+    unchanged: int = Field(
+        default=0,
+        ge=0,
+    )
+    failed: int = Field(
+        default=0,
+        ge=0,
+    )
+    validation_errors: list[
+        ProductImportValidationError
+    ] = Field(
+        default_factory=list,
+    )
+    persistence_errors: list[
+        ProductPersistenceError
+    ] = Field(
+        default_factory=list,
+    )
