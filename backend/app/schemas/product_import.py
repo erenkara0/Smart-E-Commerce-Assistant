@@ -274,3 +274,43 @@ class ProductDatabaseImportResult(BaseModel):
     errors: list[ProductPersistenceError] = Field(
         default_factory=list,
     )
+
+class ProductExcelImportResult(BaseModel):
+    total_rows: int = Field(
+        default=0,
+        ge=0,
+    )
+    valid_rows: int = Field(
+        default=0,
+        ge=0,
+    )
+    invalid_rows: int = Field(
+        default=0,
+        ge=0,
+    )
+    created: int = Field(
+        default=0,
+        ge=0,
+    )
+    updated: int = Field(
+        default=0,
+        ge=0,
+    )
+    unchanged: int = Field(
+        default=0,
+        ge=0,
+    )
+    failed: int = Field(
+        default=0,
+        ge=0,
+    )
+    validation_errors: list[
+        ProductImportValidationError
+    ] = Field(
+        default_factory=list,
+    )
+    persistence_errors: list[
+        ProductPersistenceError
+    ] = Field(
+        default_factory=list,
+    )
