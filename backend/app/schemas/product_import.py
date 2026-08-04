@@ -314,3 +314,8 @@ class ProductExcelImportResult(BaseModel):
     ] = Field(
         default_factory=list,
     )
+
+class ProductExcelImportResponse(BaseModel):
+    success: bool
+    message: str
+    data: ProductExcelImportResult | None = None
