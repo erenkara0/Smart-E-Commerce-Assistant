@@ -4,7 +4,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from scalar_fastapi import get_scalar_api_reference
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from app.api.routes import chat, health, products, root
+from app.api.routes import (
+    chat,
+    health,
+    product_import,
+    products,
+    root,
+)
 from app.core.config import settings
 from app.core.exception_handlers import (
     http_exception_handler,
@@ -42,3 +48,4 @@ app.include_router(root.router)
 app.include_router(health.router)
 app.include_router(chat.router)
 app.include_router(products.router)
+app.include_router(product_import.router)
