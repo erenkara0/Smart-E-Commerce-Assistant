@@ -400,3 +400,71 @@ def test_sku_conflict_does_not_create_partial_records(
     assert persistence_error["sku"] == "API-SKU-001"
 
     assert get_product_count(import_api_database) == 1
+
+def test_imported_products_can_be_listed_from_database(
+    client: TestClient,
+    import_api_database: Engine,
+) -> None:
+    workbook_content = create_product_workbook(
+        [
+            build_product_row(
+                product_id="prd-api-003",
+                sku="API-SKU-003",
+                name="Third Active Product",
+            ),
+            build_product_row(
+                product_id="prd-api-001",
+                sku="API-SKU-001",
+                name="First Active Product",
+            ),
+            build_product_row(
+                product_id="prd-api-002",
+                sku="API-SKU-002",
+                name="Inactive Product",
+                is_active="FALSE",
+            ),
+        ]
+    )
+
+    import_response = client.post(
+        "/products/import/excel",
+        files={
+            "file": (
+                "listing-products.xlsx",
+                workbook_content,
+                EXCEL_CONTENT_TYPE,
+            )
+        },
+    )
+
+    assert import_response.status_code == 200
+    assert import_response.json()["data"]["created"] == 3
+
+    listing_response = client.get("/products")
+
+    assert listing_response.status_code == 200
+
+    response_body = listing_response.json()
+    products = response_body["data"]["products"]
+
+    assert response_body["success"] is True
+    assert response_body["message"] == (
+        "Products listed successfully"
+    )
+    assert response_body["data"]["total"] == 2
+
+    assert [
+        product["id"]
+        for product in products
+    ] == [
+        "prd-api-001",
+        "prd-api-003",
+    ]
+
+    assert [
+        product["name"]
+        for product in products
+    ] == [
+        "First Active Product",
+        "Third Active Product",
+    ]

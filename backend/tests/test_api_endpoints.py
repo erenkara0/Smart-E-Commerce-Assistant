@@ -4,20 +4,6 @@ from fastapi.testclient import TestClient
 from app.api.routes import chat as chat_route
 
 
-REQUIRED_PRODUCT_FIELDS = {
-    "id",
-    "name",
-    "category",
-    "brand",
-    "price",
-    "currency",
-    "description",
-    "features",
-    "stock",
-    "rating",
-}
-
-
 def test_root_endpoint_returns_success(
     client: TestClient,
 ) -> None:
@@ -30,39 +16,6 @@ def test_root_endpoint_returns_success(
     assert response_body["success"] is True
     assert response_body["message"] == "MikroAsistan API is running"
     assert response_body["data"] is None
-
-
-def test_products_endpoint_returns_product_collection(
-    client: TestClient,
-) -> None:
-    response = client.get("/products")
-
-    assert response.status_code == 200
-
-    response_body = response.json()
-    products = response_body["data"]["products"]
-
-    assert response_body["success"] is True
-    assert response_body["message"] == "Products listed successfully"
-    assert response_body["data"]["total"] == len(products)
-    assert len(products) > 0
-
-
-def test_products_contain_required_fields(
-    client: TestClient,
-) -> None:
-    response = client.get("/products")
-
-    assert response.status_code == 200
-
-    products = response.json()["data"]["products"]
-    first_product = products[0]
-
-    assert REQUIRED_PRODUCT_FIELDS.issubset(first_product.keys())
-    assert first_product["price"] > 0
-    assert first_product["stock"] >= 0
-    assert 0 <= first_product["rating"] <= 5
-
 
 def test_valid_chat_request_returns_mocked_answer(
     client: TestClient,
@@ -129,3 +82,19 @@ def test_missing_chat_request_body_returns_validation_error(
     assert response_body["success"] is False
     assert isinstance(response_body["message"], str)
     assert "data" in response_body
+
+def test_products_endpoint_returns_empty_database_result(
+    client: TestClient,
+) -> None:
+    response = client.get("/products")
+
+    assert response.status_code == 200
+
+    response_body = response.json()
+
+    assert response_body["success"] is True
+    assert response_body["message"] == (
+        "Products listed successfully"
+    )
+    assert response_body["data"]["products"] == []
+    assert response_body["data"]["total"] == 0
