@@ -1,34 +1,36 @@
-from app.services.product_document_builder import build_product_documents
-from app.services.product_loader import load_products
-
-
 class InMemoryVectorStoreService:
     def __init__(self) -> None:
         self.documents: list[str] = []
 
-    def build_index(self) -> list[str]:
-        products = load_products()
-        self.documents = build_product_documents(products)
-        return self.documents
+    def build_index(
+        self,
+        documents: list[str],
+    ) -> list[str]:
+        self.documents = list(documents)
+
+        return list(self.documents)
 
     def get_documents(self) -> list[str]:
-        if not self.documents:
-            return self.build_index()
+        return list(self.documents)
 
-        return self.documents
-
-    def search(self, query: str, limit: int = 5) -> list[dict[str, str | int]]:
+    def search(
+        self,
+        query: str,
+        limit: int = 5,
+    ) -> list[dict[str, str | int]]:
         normalized_query = query.strip().casefold()
 
         if not normalized_query:
             return []
 
-        documents = self.get_documents()
         query_terms = normalized_query.split()
-        scored_results: list[dict[str, str | int]] = []
+        scored_results: list[
+            dict[str, str | int]
+        ] = []
 
-        for document in documents:
+        for document in self.get_documents():
             normalized_document = document.casefold()
+
             score = sum(
                 normalized_document.count(term)
                 for term in query_terms
