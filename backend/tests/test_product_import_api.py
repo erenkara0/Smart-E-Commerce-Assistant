@@ -468,3 +468,65 @@ def test_imported_products_can_be_listed_from_database(
         "First Active Product",
         "Third Active Product",
     ]
+def test_imported_active_products_can_be_searched(
+    client: TestClient,
+    import_api_database: Engine,
+) -> None:
+    workbook_content = create_product_workbook(
+        [
+            build_product_row(
+                product_id="prd-search-001",
+                sku="SEARCH-SKU-001",
+                name="Nebula Gaming Laptop",
+            ),
+            build_product_row(
+                product_id="prd-search-002",
+                sku="SEARCH-SKU-002",
+                name="Nebula Inactive Laptop",
+                is_active="FALSE",
+            ),
+            build_product_row(
+                product_id="prd-search-003",
+                sku="SEARCH-SKU-003",
+                name="Office Notebook",
+            ),
+        ]
+    )
+
+    import_response = client.post(
+        "/products/import/excel",
+        files={
+            "file": (
+                "search-products.xlsx",
+                workbook_content,
+                EXCEL_CONTENT_TYPE,
+            )
+        },
+    )
+
+    assert import_response.status_code == 200
+    assert import_response.json()["data"]["created"] == 3
+
+    search_response = client.get(
+        "/products/search",
+        params={
+            "query": "Nebula",
+            "limit": 5,
+        },
+    )
+
+    assert search_response.status_code == 200
+
+    response_body = search_response.json()
+    results = response_body["data"]["results"]
+
+    assert response_body["success"] is True
+    assert response_body["message"] == (
+        "Product search completed successfully"
+    )
+    assert response_body["data"]["query"] == "Nebula"
+    assert response_body["data"]["total"] == 1
+    assert len(results) == 1
+    assert "Nebula Gaming Laptop" in results[0]["document"]
+    assert "Nebula Inactive Laptop" not in results[0]["document"]
+    assert results[0]["score"] > 0

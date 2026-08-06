@@ -13,8 +13,8 @@ from app.schemas.product import (
 from app.services.product_query_service import (
     get_active_products,
 )
-from app.services.vector_store_service import (
-    vector_store_service,
+from app.services.product_vector_index_service import (
+    search_database_products,
 )
 
 
@@ -51,6 +51,10 @@ def list_products(
     response_model=ProductSearchResponse,
 )
 def search_products(
+    session: Annotated[
+        Session,
+        Depends(get_database_session),
+    ],
     query: str = Query(
         ...,
         min_length=1,
@@ -62,7 +66,8 @@ def search_products(
         le=10,
     ),
 ) -> ProductSearchResponse:
-    results = vector_store_service.search(
+    results = search_database_products(
+        session=session,
         query=query,
         limit=limit,
     )
