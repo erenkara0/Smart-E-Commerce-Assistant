@@ -19,6 +19,9 @@ from app.models import ProductModel
 from app.services.product_excel_parser import (
     EXPECTED_COLUMNS,
 )
+from uuid import uuid4
+
+from app.api.routes import chat as chat_route
 
 
 EXCEL_CONTENT_TYPE = (
@@ -530,3 +533,89 @@ def test_imported_active_products_can_be_searched(
     assert "Nebula Gaming Laptop" in results[0]["document"]
     assert "Nebula Inactive Laptop" not in results[0]["document"]
     assert results[0]["score"] > 0
+
+def test_imported_product_is_used_by_chat_rag_without_search_request(
+    client: TestClient,
+    import_api_database: Engine,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    workbook_content = create_product_workbook(
+        [
+            build_product_row(
+                product_id="prd-chat-rag-001",
+                sku="CHAT-RAG-SKU-001",
+                name="Cosmos Gaming Laptop",
+                description=(
+                    "High performance gaming laptop "
+                    "for demanding games."
+                ),
+            ),
+            build_product_row(
+                product_id="prd-chat-rag-002",
+                sku="CHAT-RAG-SKU-002",
+                name="Cosmos Inactive Laptop",
+                is_active="FALSE",
+            ),
+        ]
+    )
+
+    import_response = client.post(
+        "/products/import/excel",
+        files={
+            "file": (
+                "chat-rag-products.xlsx",
+                workbook_content,
+                EXCEL_CONTENT_TYPE,
+            )
+        },
+    )
+
+    assert import_response.status_code == 200
+    assert import_response.json()["data"]["created"] == 2
+
+    captured_prompts: list[str] = []
+
+    def fake_generate_chat_completion(
+        prompt: str,
+    ) -> str:
+        captured_prompts.append(prompt)
+
+        return "Cosmos Gaming Laptop önerilebilir."
+
+    monkeypatch.setattr(
+        chat_route,
+        "generate_chat_completion",
+        fake_generate_chat_completion,
+    )
+
+    response = client.post(
+        "/chat",
+        json={
+            "message": "Cosmos laptop hakkında bilgi verir misin?",
+            "session_id": (
+                f"database-rag-session-{uuid4()}"
+            ),
+        },
+    )
+
+    assert response.status_code == 200
+
+    response_body = response.json()
+
+    assert response_body["success"] is True
+    assert response_body["message"] == (
+        "Chat response generated with RAG"
+    )
+    assert response_body["data"]["answer"] == (
+        "Cosmos Gaming Laptop önerilebilir."
+    )
+
+    assert len(captured_prompts) == 1
+
+    prompt = captured_prompts[0]
+
+    assert "Cosmos Gaming Laptop" in prompt
+    assert "prd-chat-rag-001" in prompt
+
+    assert "Cosmos Inactive Laptop" not in prompt
+    assert "prd-chat-rag-002" not in prompt

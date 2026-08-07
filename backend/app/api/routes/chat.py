@@ -1,9 +1,16 @@
+from typing import Annotated
 from uuid import uuid4
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
 from app.core.config import settings
-from app.schemas.chat import ChatRequest, ChatResponse, ChatResponseData
+from app.db.session import get_database_session
+from app.schemas.chat import (
+    ChatRequest,
+    ChatResponse,
+    ChatResponseData,
+)
 from app.services.conversation_context_builder import (
     build_conversation_history,
     build_retrieval_query,
@@ -18,23 +25,43 @@ from app.services.rag_fallbacks import (
     build_openai_error_fallback,
 )
 from app.services.rag_prompt_builder import build_rag_prompt
-from app.services.retrieval_context_builder import build_retrieval_context
-from app.services.session_memory_service import session_memory_service
+from app.services.retrieval_context_builder import (
+    build_retrieval_context,
+)
+from app.services.session_memory_service import (
+    session_memory_service,
+)
 
 
-router = APIRouter(prefix="/chat", tags=["Chat"])
+router = APIRouter(
+    prefix="/chat",
+    tags=["Chat"],
+)
 
 
-@router.post("", response_model=ChatResponse)
-def create_chat_response(request: ChatRequest) -> ChatResponse:
+@router.post(
+    "",
+    response_model=ChatResponse,
+)
+def create_chat_response(
+    request: ChatRequest,
+    session: Annotated[
+        Session,
+        Depends(get_database_session),
+    ],
+) -> ChatResponse:
     session_id = request.session_id or str(uuid4())
 
-    previous_messages = session_memory_service.get_recent_messages(
-        session_id=session_id,
-        limit=settings.session_memory_limit,
+    previous_messages = (
+        session_memory_service.get_recent_messages(
+            session_id=session_id,
+            limit=settings.session_memory_limit,
+        )
     )
 
-    conversation_history = build_conversation_history(previous_messages)
+    conversation_history = build_conversation_history(
+        previous_messages
+    )
 
     retrieval_query = build_retrieval_query(
         current_message=request.message,
@@ -47,7 +74,10 @@ def create_chat_response(request: ChatRequest) -> ChatResponse:
         content=request.message,
     )
 
-    context = build_retrieval_context(retrieval_query)
+    context = build_retrieval_context(
+        session=session,
+        query=retrieval_query,
+    )
 
     if not context:
         answer = build_no_context_answer()
@@ -75,9 +105,13 @@ def create_chat_response(request: ChatRequest) -> ChatResponse:
 
     try:
         answer = generate_chat_completion(prompt)
-        response_message = "Chat response generated with RAG"
+        response_message = (
+            "Chat response generated with RAG"
+        )
     except OpenAIServiceError as exc:
-        response_message, answer = build_openai_error_fallback(exc.code)
+        response_message, answer = (
+            build_openai_error_fallback(exc.code)
+        )
 
     if not answer.strip():
         answer = build_empty_model_answer()

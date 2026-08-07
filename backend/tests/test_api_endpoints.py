@@ -27,7 +27,7 @@ def test_valid_chat_request_returns_mocked_answer(
     monkeypatch.setattr(
         chat_route,
         "build_retrieval_context",
-        lambda query: "Test ürün bağlamı",
+        lambda session, query: "Test ürün bağlamı",
     )
     monkeypatch.setattr(
         chat_route,

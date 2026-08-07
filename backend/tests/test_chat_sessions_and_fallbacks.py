@@ -20,7 +20,7 @@ def configure_successful_chat_mocks(
     monkeypatch.setattr(
         chat_route,
         "build_retrieval_context",
-        lambda query: "Test ürün bağlamı",
+        lambda session, query: "Test ürün bağlamı",
     )
     monkeypatch.setattr(
         chat_route,
@@ -109,7 +109,7 @@ def test_follow_up_request_receives_previous_messages(
     monkeypatch.setattr(
         chat_route,
         "build_retrieval_context",
-        lambda query: "Test ürün bağlamı",
+        lambda session, query: "Test ürün bağlamı",
     )
     monkeypatch.setattr(
         chat_route,
@@ -158,7 +158,7 @@ def test_chat_returns_no_context_fallback(
     monkeypatch.setattr(
         chat_route,
         "build_retrieval_context",
-        lambda query: "",
+        lambda session, query: "",
     )
     monkeypatch.setattr(
         chat_route,
@@ -215,7 +215,7 @@ def test_chat_returns_openai_error_fallback(
     monkeypatch.setattr(
         chat_route,
         "build_retrieval_context",
-        lambda query: "Test ürün bağlamı",
+        lambda session, query: "Test ürün bağlamı",
     )
     monkeypatch.setattr(
         chat_route,
@@ -247,7 +247,7 @@ def test_chat_returns_empty_model_fallback(
     monkeypatch.setattr(
         chat_route,
         "build_retrieval_context",
-        lambda query: "Test ürün bağlamı",
+        lambda session, query: "Test ürün bağlamı",
     )
     monkeypatch.setattr(
         chat_route,
