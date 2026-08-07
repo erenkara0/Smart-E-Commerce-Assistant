@@ -30,4 +30,3 @@ def client() -> Generator[TestClient, None, None]:
     finally:
         Base.metadata.drop_all(engine)
         engine.dispose()
-        TEST_TEMP_DIR.cleanup()
